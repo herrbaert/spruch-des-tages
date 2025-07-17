@@ -7,10 +7,8 @@ const autorInput = document.getElementById('autor-input');
 const spruchListe = document.getElementById('spruch-liste');
 
 // Schritt 2: Deine Daten. Füge hier gleich 2-3 deiner eigenen Lieblingssprüche hinzu!
-let sprueche = [
-    { text: "Der Weg ist das Ziel.", autor: "Konfuzius" },
-    { text: "Phantasie ist wichtiger als Wissen, denn Wissen ist begrenzt.", autor: "Albert Einstein" }
-];
+// verschoben nach server.js
+
 
 // Schritt 3: Eine Funktion, die deine Sprüche-Liste im HTML anzeigt.
 function renderSprueche() {
