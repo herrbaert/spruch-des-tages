@@ -7,33 +7,73 @@ const autorInput = document.getElementById('autor-input');
 const spruchListe = document.getElementById('spruch-liste');
 
 // Schritt 2: Deine Daten. Füge hier gleich 2-3 deiner eigenen Lieblingssprüche hinzu!
-let sprueche = [
-    { text: "Der Weg ist das Ziel.", autor: "Konfuzius" },
-    { text: "Phantasie ist wichtiger als Wissen, denn Wissen ist begrenzt.", autor: "Albert Einstein" }
-];
+async function ladeSprueche() {
+    // Rufe den Endpunkt an, den du im Backend erstellt hast
+    const response = await fetch('/api/sprueche');
+    // Wandle die Text-Antwort des Servers in ein echtes JavaScript-Array um
+    const daten = await response.json();
 
-// Schritt 3: Eine Funktion, die deine Sprüche-Liste im HTML anzeigt.
-function renderSprueche() {
+    // Rufe die render-Funktion mit den frischen Daten vom Server auf
+    renderSprueche(daten);
+}
+
+// app.js
+
+function renderSprueche(sprueche) {
     spruchListe.innerHTML = '';
     sprueche.forEach(spruch => {
         const li = document.createElement('li');
-        li.className = 'list-group-item';
+        // Beachte die Klassen für die Anordnung mit Flexbox
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
         li.innerHTML = `
-            <p class="mb-1">"${spruch.text}"</p>
-            <small class="text-muted fst-italic">- ${spruch.autor}</small>
+            <div>
+                <p class="mb-1">"${spruch.text}"</p>
+                <small class="text-muted fst-italic">- ${spruch.autor}</small>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="loescheSpruch(${spruch.id})">Löschen</button>
         `;
         spruchListe.appendChild(li);
     });
 }
 
+// NEUE Funktion, um einen Lösch-Anruf an den Server zu senden
+async function loescheSpruch(id) {
+    // Sende den Anruf an deinen DELETE-Endpunkt
+    await fetch(`/api/sprueche/${id}`, {
+        method: 'DELETE'
+    });
+
+    // Lade die Liste neu, um die Änderung anzuzeigen
+    ladeSprueche();
+}
+
+
+
 // Schritt 4: Auf das Absenden des Formulars reagieren.
-neuesSpruchForm.addEventListener('submit', function(event) {
+// Passe deinen bestehenden Event Listener an
+neuesSpruchForm.addEventListener('submit', async function(event) {
     event.preventDefault();
-    const neuerSpruch = { text: spruchInput.value, autor: autorInput.value };
-    sprueche.push(neuerSpruch);
-    renderSprueche();
+
+    // Das Datenpaket, das wir an den Server senden
+    const daten = {
+        text: spruchInput.value,
+        autor: autorInput.value
+    };
+
+    // Sende die Daten an den POST-Endpunkt
+    await fetch('/api/sprueche', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json' // Sagt dem Server: "Ich schicke JSON"
+        },
+        body: JSON.stringify(daten) // Wandelt das JS-Objekt in Text um
+    });
+
+    // Lade die Liste neu und leere das Formular
+    ladeSprueche();
     neuesSpruchForm.reset();
 });
+
 
 // Schritt 5: Auf den Klick des "Zufalls-Button" reagieren.
 randomSpruchBtn.addEventListener('click', function() {
@@ -47,3 +87,4 @@ randomSpruchBtn.addEventListener('click', function() {
 
 // Initialer Aufruf: Die Liste beim Start der Seite laden.
 renderSprueche();
+ladeSprueche();
