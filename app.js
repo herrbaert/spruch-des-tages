@@ -23,7 +23,7 @@ async function ladeSprueche() {
     console.error("fehler", error);
   }
   // Rufe die render-Funktion mit den frischen Daten vom Server auf
-//   renderSprueche(daten);
+  //   renderSprueche(daten);
 }
 
 // app.js
@@ -49,7 +49,7 @@ function renderSprueche(sprueche) {
 // NEUE Funktion, um einen Lösch-Anruf an den Server zu senden
 async function loescheSpruch(id) {
   // Sende den Anruf an deinen DELETE-Endpunkt
-  await fetch(`/api/sprueche/${id}`, {
+  await fetch(`http://localhost:3000/api/sprueche/${id}`, {
     method: "DELETE",
   });
 
@@ -69,7 +69,7 @@ neuesSpruchForm.addEventListener("submit", async function (event) {
   };
 
   // Sende die Daten an den POST-Endpunkt
-  await fetch("/api/sprueche", {
+  await fetch("http://localhost:3000/api/sprueche", {
     method: "POST",
     headers: {
       "Content-Type": "application/json", // Sagt dem Server: "Ich schicke JSON"
@@ -83,26 +83,25 @@ neuesSpruchForm.addEventListener("submit", async function (event) {
 });
 
 // Schritt 5: Auf den Klick des "Zufalls-Button" reagieren.
-randomSpruchBtn.addEventListener("click",async function () {
-     try {
+randomSpruchBtn.addEventListener("click", async function () {
+  try {
     const response = await fetch("http://localhost:3000/api/sprueche");
     if (!response.ok) {
       console.log(response.status);
     }
     // Wandle die Text-Antwort des Servers in ein echtes JavaScript-Array um
     const sprueche = await response.json();
+    const zufallsIndex = Math.floor(Math.random() * sprueche.length);
+    const zufallsSpruch = sprueche[zufallsIndex];
+    spruchAnzeige.innerHTML = `
+        <p>"${zufallsSpruch.text}"</p>
+        <footer class="blockquote-footer">${zufallsSpruch.autor}</footer>
+    `;
     console.log(sprueche);
-
   } catch (error) {
     console.error("fehler", error);
     return;
   }
-  const zufallsIndex = Math.floor(Math.random() * sprueche.length);
-  const zufallsSpruch = sprueche[zufallsIndex];
-  spruchAnzeige.innerHTML = `
-        <p>"${zufallsSpruch.text}"</p>
-        <footer class="blockquote-footer">${zufallsSpruch.autor}</footer>
-    `;
 });
 
 // Initialer Aufruf: Die Liste beim Start der Seite laden.
