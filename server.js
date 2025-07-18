@@ -4,6 +4,14 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
+
+
 // Middleware, damit unser Server JSON-Anfragen versteht.
 app.use(express.json());
 
@@ -18,7 +26,9 @@ let sprueche = [
 // ENDPUNKT 1: Alle Sprüche holen (GET)
 // Wenn das Frontend die URL /api/sprueche aufruft, passiert das hier:
 app.get('/api/sprueche', (req, res) => {
+    console.log("get-anfrage")
     res.json(sprueche);
+    
 });
 
 // ENDPUNKT 2: Einen neuen Spruch speichern (POST)
@@ -29,10 +39,10 @@ app.post('/api/sprueche', (req, res) => {
         text: req.body.text,
         autor: req.body.autor
     };
-
+console.log(neuerSpruch);
     // Füge den neuen Spruch zu unserem Array hinzu
     sprueche.push(neuerSpruch); // LÜCKE: Was soll hier zum Array hinzugefügt werden?
-
+console.log(neuerSpruch);
     // Schicke eine Erfolgsmeldung zurück
     res.status(201).json(neuerSpruch);
 });
@@ -62,9 +72,3 @@ app.listen(port, () => {
     console.log(`Server läuft auf http://localhost:${port}`);
 });
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-});
